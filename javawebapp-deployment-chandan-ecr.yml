@@ -19,11 +19,11 @@ spec:
       containers:
       - name: javawebappcontainer #containerName
         image: 132222711585.dkr.ecr.ap-southeast-2.amazonaws.com/java-web-app:VERSION
-      imagePullSecrets:
-      - name: regcred  
         ports:
         - containerPort: 8080 #port of the container
           name: 8080portname #we_can_give_name_to_containerport
+      imagePullSecrets:
+      - name: regcred  
 ---
 apiVersion: v1
 kind: Service
