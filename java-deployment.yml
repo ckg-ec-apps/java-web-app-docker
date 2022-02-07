@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javawebapp-deployment
+  namespace: test-ns
+spec:
+  revisionHistoryLimit: 10
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1 # It is an optional field that specifies the maximum number of Pods that can be created over the desired number of Pods.
+      maxUnavailable: 1  # when we are rolling out or rolling back, how many pods are maximum unavailable, i.e how many it will delete to create new ones
+  minReadySeconds: 30      # new pod will wait 30 seconds to terminate old pod. since application will take sometime to fully functional. If application taking 60 sec to fully fuctional, give 60 sec time for minReadySeconds.
+  selector:
+    matchLabels:
+      app: javawebapp
+  template: #This is pod Template
+    metadata: #This is pod metadata
+      name: javawebapp_pod
+      labels:
+        app: javawebapp
+    spec: #pod specifications 
+      containers:
+      - name: javawebappcontainer #containerName
+        image: 132222711585.dkr.ecr.ap-southeast-2.amazonaws.com/java-web-app:${buildNumber}
+        ports:
+        - containerPort: 8080 #port of the container
+          name: 8080portname #we_can_give_name_to_containerport
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: javawebappsvc
+  namespace: test-ns
+spec:
+  selector:
+    app: javawebapp #this is pod label
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080 # container port is the target port
+    nodePort: 32172
+    name: tomcat-httpport
